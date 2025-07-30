@@ -1,6 +1,7 @@
 <div class="top-container">
     <div class="form-input">
-        <input class="input-region" placeholder="Enter Pokémon name or Dex number" type="text" id="fname"
+        <input class="input-region" (keydown.enter)="onSubmit()" [value]="userInput$ | async"
+            (input)="onInputChange($event)" placeholder="Enter Pokémon name or Dex number" type="text" id="fname"
             name="fname"><br>
     </div>
 </div>
