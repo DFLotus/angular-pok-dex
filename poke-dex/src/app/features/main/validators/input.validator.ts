@@ -20,7 +20,7 @@ export class InputValidator {
                 message: 'Input must not contain spaces between characters.'
             };
         }
-        if (this.hasSpecialCharacter(input)) {
+        if (this.hasSpecialCharacter(input) || this.containsLettersAndNumbers(input)) {
             return {
                 state: InputValidationState.INVALID_CHARACTERS,
                 message: 'Input contains invalid characters.'
@@ -31,6 +31,15 @@ export class InputValidator {
             state: InputValidationState.VALID,
             message: 'Input is vaild.'
         };
+    }
+
+    /**
+     * Checks if input contains letters and numbers.
+     * @param input - The string to check.
+     * @returns True if the string is mixed with letters and numbers.
+     */
+    private static containsLettersAndNumbers(input: string): boolean {
+        return /[a-zA-Z]/.test(input) && /\d/.test(input);
     }
 
 

@@ -1,5 +1,5 @@
 /**
- * Represents different states a string can be in the vaildation process
+ * Vaildation states 
 */
 export enum InputValidationState {
     VALID = 'vaild',

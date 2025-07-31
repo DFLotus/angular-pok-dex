@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { Observable } from 'rxjs';
 import { ValidationResult } from '../../types/validation-result.type';
 import { TopSectionService } from '../../services/top-section.service';
 import { InputValidator } from '../../validators/input.validator';
-import { Observable } from 'rxjs';
 import { InputValidationState } from '../../enums/input-validation-state.enum';
-import { AsyncPipe } from '@angular/common';
+import { PokemonApiService } from '../../../api/pokemon-api.service';
+import { PokemonDTO } from '../../dto/pokemon.dto';
+import { PokemonResponseAdapter } from '../../../../core/adapter/pokemon-response.adapter';
 
 @Component({
   selector: 'app-top-section',
@@ -13,14 +16,14 @@ import { AsyncPipe } from '@angular/common';
   styleUrl: './top-section.scss'
 })
 export class TopSection {
-  userInput$: Observable<string>;
+  userInput$: Observable<string>; //track's the value of BSubject
   vaildationResult?: ValidationResult;
 
   /**
    * Inject service into class
    * userInput$ initlized here due to DI (dependency injection) 
   */
-  constructor(private topBarService: TopSectionService) {
+  constructor(private topBarService: TopSectionService, private pokemonAPI: PokemonApiService) {
     this.userInput$ = this.topBarService.inputData$;
   }
 
@@ -42,8 +45,18 @@ export class TopSection {
     this.vaildationResult = InputValidator.validate(currInput);
 
     if (this.vaildationResult.state === InputValidationState.VALID) {
-      //api logic here.
-      console.log("Input is valid: ", currInput)
+      this.pokemonAPI.getPokemonByName(currInput).subscribe({
+        next: (response) => {
+          const pokeData: PokemonDTO = PokemonResponseAdapter.filterPokeData(response);
+          console.log("API success:", pokeData);
+          //Next reflect changes in UI those are next steps.
+          //Add spinner
+        },
+        error: (error) => {
+          console.error("API error:", error);
+          // handle UI/html reflection to user 
+        }
+      });
     }
     else {
       alert(`Validation failed: ${this.vaildationResult.message}`);
